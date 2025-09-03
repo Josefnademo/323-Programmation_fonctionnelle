@@ -8,8 +8,8 @@ status: TODO / WIP / DONE
 
 | activité   | stat | act,fun | where | take... | dist.,union | rev. | order | select | group | join | zip,conc... | range... | aggr. | sum... | ToList... | Rec. | Imm. |
 |------------|:----:|:-------:|-------|---------|-------------|------|-------|--------|-------|------|-------------|----------|-------|--------|-----------|------|------|
-| marché     | TODO |         | #1    |         |             |      |       |        |       |      |             |          |       |        |           |      |      |
-| ncdu       | TODO |         | #1    |         |             |      |       |        |       |      |             |          |       |        | x         |      |      |
+| marché     | DONE |         | #1    |         |             |      |       |        |       |      |             |          |       |        |           |      |      |
+| ncdu       | WIP  |         | #1    |         |             |      |       |        |       |      |             |          |       |        | x         |      |      |
 | words      | TODO | #2      | x     | #2      |             | #2   | #2    | x      | x     | x    |             |          |       |        | x         |      |      |
 | cinema     | TODO | #2      | x     | x       |             |      |       | x      |       |      |             |          |       |        | x         |      |      |
 | hardware   | TODO | #2      | x     |         |             |      | #2    |        |       |      |             |          |       |        | x         |      |      |
