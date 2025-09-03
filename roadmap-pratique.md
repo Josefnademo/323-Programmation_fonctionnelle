@@ -12,7 +12,7 @@ status: TODO / WIP / DONE
 | ncdu       | DONE |         | #1    |         |             |      |       |        |       |      |             |          |       |        | x         |      |      |
 | words      | TODO | #2      | x     | #2      |             | #2   | #2    | x      | x     | x    |             |          |       |        | x         |      |      |
 | cinema     | TODO | #2      | x     | x       |             |      |       | x      |       |      |             |          |       |        | x         |      |      |
-| hardware   | TODO | #2      | x     |         |             |      | #2    |        |       |      |             |          |       |        | x         |      |      |
+| hardware   |  WIP | #2      | x     |         |             |      | #2    |        |       |      |             |          |       |        | x         |      |      |
 | marketIsB  | TODO | x       | x     |         |             |      |       | #3     |       |      |             |          | #3    | #3     | x         |      |      |
 | rando      | TODO |         |       |         |             |      |       | #3     |       |      |             |          | #3    | #3     | x         |      |      |
 | swapi #4   | TODO | x       | x     | x       | x           | x    | x     | x      | x     | x    |             | x        | x     | x      | x         |      |      |
