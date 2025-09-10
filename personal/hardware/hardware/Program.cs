@@ -50,18 +50,18 @@ namespace hardware
             Console.WriteLine("Ordre (1) croissant ou (2) décroissant ?");
             int ordre = int.Parse(Console.ReadLine());
 
-            //tuple
+            //tuple - это структура данных, которая хранит несколько значений вместе, как один объект. У него нет отдельного класса, можно написать прямо в коде.
             query = (critere, ordre) switch
             {
                 (1, 1) => query.OrderBy(h => h.Price),
                 (1, 2) => query.OrderByDescending(h => h.Price),
                 (2, 1) => query.OrderBy(h => h.ClockSpeed),
                 (2, 2) => query.OrderByDescending(h => h.ClockSpeed),
-                _ => query //default
+                _ => query //default: если пользователь ввёл что-то другое, просто вернём без сортировки.
             };
 
-            //ChatGPT did this part
-            /*   foreach (var h in query)
+            //GPT did this part CSV
+               foreach (var h in query)
                     Console.WriteLine($"{h.Name} ({h.Type}) - {h.Price} CHF - {h.ClockSpeed} GHz - {h.Cores} cœurs - {h.Brand}");
 
                 Console.WriteLine("Exporter en CSV ? (o/n)");
@@ -79,7 +79,7 @@ namespace hardware
                 {
                     Console.WriteLine("No worries, press any key...");
                     Console.ReadKey();
-                }*/
+                }
         }
 
         static double AskNumber(string message)
