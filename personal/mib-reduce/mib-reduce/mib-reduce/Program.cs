@@ -27,12 +27,22 @@ namespace mib_reduce
             Console.WriteLine($"Quantité de groseilles disponibles: {groseillesQquantity}");
 
             // 1. Chiffre d'affaire total par marchand
-            var ChiffreAffaire = products.GroupBy(p => p.Producer).Select(g => new { Producer = g.Key, ChiffreAffaire = g.Sum(p => p.Quantity * p.PricePerUnit) }).ToList();
-            Console.WriteLine("\nChiffre d'affaire par marchand: ");
-            foreach (var item in ChiffreAffaire)
-            {
-                Console.WriteLine($"{item.Producer}: {item.ChiffreAffaire} CHF");
-            }
+// Groupe les produits par producteur, calcule le chiffre d'affaires pour chaque groupe et matérialise le résultat en liste.
+var ChiffreAffaire = products
+    .GroupBy(p => p.Producer) // regroupe les éléments de 'products' par la propriété 'Producer'
+    .Select(g => new          // pour chaque groupe, crée un objet anonyme contenant :
+    {
+        Producer = g.Key,     //   - la clé du groupe (la valeur par laquelle il est groupé- le nom du producteur)
+        ChiffreAffaire = g.Sum(p => p.Quantity * p.PricePerUnit) //   - la somme des (Quantité * PrixUnitaire)
+    })
+    .ToList();                // exécute la requête et retourne List<...>
+
+Console.WriteLine("\nChiffre d'affaire par marchand: ");
+foreach (var item in ChiffreAffaire)
+{
+    // Affiche le producteur et son chiffre d'affaires
+    Console.WriteLine($"{item.Producer}: {item.ChiffreAffaire} CHF");
+}
 
             //2. Le plus grand, le plus petit et la moyenne de ces chiffres d’affaire
             var LPGCA = ChiffreAffaire.Max(x => x.ChiffreAffaire);
