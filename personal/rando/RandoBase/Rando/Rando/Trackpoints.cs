@@ -104,8 +104,13 @@ namespace Rando
               )
               .ToList();
         }
-    } 
+    }
 
-    protected override void OnPaint(PaintEventArgs e) { }
-  
+  /*  public class Paint
+    {
+        protected override void OnPaint(PaintEventArgs e) {
+            base.OnPaint(e);
+        
+        }
+    }*/
 }

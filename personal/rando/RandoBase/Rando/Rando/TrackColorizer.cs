@@ -32,16 +32,16 @@ namespace Rando
         public static List<(Point point, Color color)> ToColoredPoints(List<Trackpoint> trackpoints, int width, int height)
         {
             var points = TrackConverter.ToPoints(trackpoints, width, height);
-            var result = new List<(Point, Color)>();
 
-            for (int i = 0; i < trackpoints.Count; i++)
-            {  // Choose color based on elevation (divide by 100 to map to gradient index)
-                int index = Math.Min((int)(trackpoints[i].Elevation / 100), gradient.Length - 1);
-                Color c = gradient[index];
-                result.Add((points[i], c));
-            }
-
-            return result;
+            // Using LINQ: Select with index
+            return points
+                .Select((p, i) =>
+                {
+                    int index = Math.Min((int)(trackpoints[i].Elevation / 100), gradient.Length - 1);
+                    Color c = gradient[index];
+                    return (p, c);
+                })
+                .ToList();
         }
     }
 }
