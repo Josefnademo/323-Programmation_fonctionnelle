@@ -26,7 +26,7 @@ namespace Rando
     public class GPXReader
     {
         // Reads a GPX file and parses all track points
-        public static List<Trackpoint> ReadGPX(string filePath= "../../../../../../gpx/gemmikandersteg.gpx")
+        public static List<Trackpoint> ReadGPX(string filePath= "../../../../../../gpx/Ballade_châtaignère_🌰.gpx")
         {
             List<Trackpoint> points = new List<Trackpoint>();
 
@@ -98,8 +98,8 @@ namespace Rando
             return trackpoints
               .Select(tp =>
                   new Point(
-                      (int)((tp.Longitude - minLon) / (maxLon - minLon) * width),
-                      height - (int)((tp.Latitude - minLat) / (maxLat - minLat) * height)
+                      (int)((tp.Longitude - minLon) / (maxLon - minLon) * width*0.5 +400),
+                      height - (int)((tp.Latitude - minLat) / (maxLat - minLat) * height*0.95 +20)
                   )
               )
               .ToList();
