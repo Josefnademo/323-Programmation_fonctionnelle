@@ -38,6 +38,7 @@
             Margin = new Padding(3, 2, 3, 2);
             Name = "Rando";
             Text = "Rando";
+            Load += Rando_Load;
             Paint += Rando_Form_Paint;
             ResumeLayout(false);
         }

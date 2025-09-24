@@ -26,7 +26,7 @@ namespace Rando
     public class GPXReader
     {
         // Reads a GPX file and parses all track points
-        public static List<Trackpoint> ReadGPX(string filePath)
+        public static List<Trackpoint> ReadGPX(string filePath= "../../../../../../gpx/gemmikandersteg.gpx")
         {
             List<Trackpoint> points = new List<Trackpoint>();
 
@@ -106,11 +106,5 @@ namespace Rando
         }
     }
 
-  /*  public class Paint
-    {
-        protected override void OnPaint(PaintEventArgs e) {
-            base.OnPaint(e);
-        
-        }
-    }*/
+  
 }
