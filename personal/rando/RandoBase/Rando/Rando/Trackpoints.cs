@@ -86,6 +86,26 @@ namespace Rando
         }
     }
 
- 
+    public class TrackConverter
+    {
+        public static List<Point> ToPoints(List<Trackpoint> trackpoints, int width, int height)
+        {
+            double minLat = trackpoints.Min(p => p.Latitude);
+            double maxLat = trackpoints.Max(p => p.Latitude);
+            double minLon = trackpoints.Min(p => p.Longitude);
+            double maxLon = trackpoints.Max(p => p.Longitude);
+
+            return trackpoints
+              .Select(tp =>
+                  new Point(
+                      (int)((tp.Longitude - minLon) / (maxLon - minLon) * width),
+                      height - (int)((tp.Latitude - minLat) / (maxLat - minLat) * height)
+                  )
+              )
+              .ToList();
+        }
+    } 
+
+    protected override void OnPaint(PaintEventArgs e) { }
   
 }
