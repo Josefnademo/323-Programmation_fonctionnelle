@@ -1,7 +1,9 @@
-﻿using System;
+﻿using Microsoft.VisualBasic.Logging;
+using System;
 using System;
 using System.Collections.Generic;
-using System.Collections.Generic;
+using System.Diagnostics;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -55,4 +57,35 @@ namespace Rando
             return points; // Return all parsed track points
         }
     }
+
+
+    public class GPXWriter
+    {
+        public static void WriteGPX(string filePath, List<Trackpoint> points)
+        {
+            // creating XML structure
+            XNamespace ns = "http://www.topografix.com/GPX/1/1";
+
+            var gpx = new XElement(ns + "gpx",
+                new XAttribute("version", "1.1"),
+                 new XElement(ns + "trk",
+                    new XElement(ns + "trkseg",
+                    // Convert each Trackpoint to a <trkpt>
+                    points.ConvertAll(p =>
+                    new XElement(ns + "trkpt",
+                     new XAttribute("lat", p.Latitude.ToString(CultureInfo.InvariantCulture)),
+                                new XAttribute("lon", p.Longitude.ToString(CultureInfo.InvariantCulture)),
+                                new XElement(ns + "ele", p.Elevation.ToString(CultureInfo.InvariantCulture))
+                       )
+                    )
+                 )
+            )
+        );
+
+            gpx.Save(filePath);
+        }
+    }
+
+ 
+  
 }

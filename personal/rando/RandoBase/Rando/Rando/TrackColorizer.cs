@@ -36,7 +36,7 @@ namespace Rando
 
             for (int i = 0; i < trackpoints.Count; i++)
             {  // Choose color based on elevation (divide by 100 to map to gradient index)
-                int index = Math.Min(trackpoints[i].Elevation / 100, gradient.Length - 1);
+                int index = Math.Min((int)(trackpoints[i].Elevation / 100), gradient.Length - 1);
                 Color c = gradient[index];
                 result.Add((points[i], c));
             }

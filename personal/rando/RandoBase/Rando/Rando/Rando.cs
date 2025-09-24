@@ -12,6 +12,8 @@ namespace Rando
             Pen myPen = new Pen(Color.Red);
             myPen.Width = 2;
 
+
+           // foreach () { };
             Point[] points = new Point[4] { new Point(30,50), new Point(50,10), new Point(80,50), new Point(111,400) };
             this.CreateGraphics().DrawLines(myPen, points);
         }
