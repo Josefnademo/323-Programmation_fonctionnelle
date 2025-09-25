@@ -13,7 +13,7 @@ status: TODO / WIP / DONE
 | cinema     | TODO |   #2    | x     | x       |             |      |       | x      |       |      |             |          |       |        | x         |      |      |
 | hardware   | DONE |   #2    | x     |         |             |      | #2    |        |       |      |             |          |       |        | x         |      |      |
 | mib-map    | WIP  |    x    | x     |         |             |      |       | #3     |       |      |             |          |       |        | x         |      |      |
-| rando      | WIP  |         |       |         |             |      |       | #3     |       |      |             |          |       |        | x         |      |      |
+| rando      | DONE |         |       |         |             |      |       | #3     |       |      |             |          |       |        | x         |      |      |
 | mib-reduce | TODO |         |       |         |             |      |       |        |       |      |             |          | #4    | #4     |           |      |      |
 | swapi #4   | TODO |    x    | x     | x       | x           | x    | x     | x      | x     | x    |             | x        | x     | x      | x         |      |      |
 | randoPure  | TODO |    x    | x     |         |             |      |       |        |       |      | #5          |          | x     | x      | x         |      |      |
