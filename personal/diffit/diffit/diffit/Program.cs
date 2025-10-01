@@ -36,8 +36,11 @@ Console.Write($"{linesB.Length} lines");
 
 
 // TODO: 03 Vérifier que les fichier ont le même nombre de lignes
-if (true)
+if (linesA.Length == linesB.Length) 
 {
+    Console.WriteLine($"les fichiers {pathA} et {pathB} ont le même nombre de lignes");
+}
+else{
     Console.WriteLine("Erreur: les fichiers n'ont pas le même nombre de ligne");
     Environment.Exit(-2);
 }
