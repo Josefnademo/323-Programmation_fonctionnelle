@@ -5,6 +5,7 @@
 //         Cet outil permet de comparer 2 fichiers (avec le même nombre de lignes) ligne par ligne et indiquer les différences... Il permet aussi de faire du chiffrement
 
 using System;
+using System.IO.Compression;
 using System.Net;
 using System.Runtime.Intrinsics.X86;
 
@@ -87,17 +88,17 @@ if (ignoreCase) {
     Console.WriteLine("> Casse forcée");
 }
 
-
-
 // TODO:  05 Appliquer le nettoyage selon la demande utilisateur
 
 
 // TODO: 06 Créer et remplir une liste de LinesComparison à partir de linesA et linesB
 List<LinesComparison> comparisons = new();
 
-var LinesComparisonResult = linesA.Zip(linesA,(A,B)=> $"{A}: {B}") ;
+var LinesComparisonResult = linesA.Zip(linesA,(A,B)=> $"{A}: {B}");
+
 // affichage des touotes lines
 LinesComparisonResult.ToList().ForEach(item => Console.WriteLine(item));
+
 
 // TODO: 07 Sélectionner les lignes qui ont des différences
 var diffLines = new List<LinesComparison>();
@@ -110,13 +111,10 @@ firstNotSecond.ForEach(i => Console.WriteLine(i));
 
 
 
-
-
-
 // TODO: 08 Afficher le nombre de lignes identiques et différentes entre les 2 fichiers
-/*int nmbrIdentLines =;
-int nmbrDiffLines = ;
-Console.WriteLine($"Lignes identiques: {nmbrIdentLines}\r\nLignes différentes: {nmbrDiffLines}");*/
+int nmbrDiffLines = diffLines.Count;
+int nmbrIdentLines = linesA.Length - nmbrDiffLines;
+Console.WriteLine($"Lignes identiques: {nmbrIdentLines}\r\nLignes différentes: {nmbrDiffLines}");
 
 // TODO: 09 Définir une fonction qui compte les différences (caractères différents) entre deux textes (sera utilisé pour les 2 lignes de A et B...)
 // Pour info/rappel, la fonction Zip (comme une fermeture éclair) permet d’associer deux listes.
@@ -129,6 +127,7 @@ Func<LinesComparison, int> countVariations = _ => -1;
 // TODO: 10 Afficher pour chaque ligne différente, le nombre de variations
 
 /// Diff coloré
+/// Console.ForegroundColor = ConsoleColor.Red; 
 // TODO: 11 Colorier les différences
 // Pour chaque ligne où il y a des différences:
 // On affiche ainsi:
