@@ -4,6 +4,10 @@
 //Descr. : Entraînement au test 323
 //         Cet outil permet de comparer 2 fichiers (avec le même nombre de lignes) ligne par ligne et indiquer les différences... Il permet aussi de faire du chiffrement
 
+using System;
+using System.Net;
+using System.Runtime.Intrinsics.X86;
+
 ///MENU
 Console.WriteLine("+--------------------------------+");
 Console.WriteLine("|DIFFIT : A very limited DIFFTOOL|");
@@ -52,9 +56,9 @@ Console.WriteLine(">Fichiers chargés avec succés");
 // Une fonction de nettoyage reçoit un texte (une ligne de fichier) et renvoie cette même ligne adaptée
 // Il existe la fonction Replace sur les string...
 // Le caractère tabulation s’écrit \t
-Func<string, string> cleanSpaces = text => text;
-Func<string, string> cleanTabs = text => text;
-Func<string, string> enforceCase = text => text;
+Func<string, string> cleanSpaces = text => text.Contains(" ") ? text.Replace(" " , "") : text;
+Func<string, string> cleanTabs = text => text.Contains("\t") ? text.Replace("\t", "\r") : text;
+Func<string, string> enforceCase = text => text.ToLower();
 
 /// OPTIONS DE NETTOYAGE
 Console.WriteLine("Choisir les options:");
@@ -62,11 +66,19 @@ Console.WriteLine("Choisir les options:");
 Console.Write("-Ignorer les espaces [o/n]: ");
 bool ignoreSpaces = Console.ReadLine() == "o";
 
+
 Console.Write("-Ignorer les tabulations [o/n]: ");
 bool ignoreTabs = Console.ReadLine() == "o";
 
+
 Console.Write("-Ignorer la casse [o/n]: ");
 bool ignoreCase = Console.ReadLine() == "o";
+/*if (ignoreCase) {
+    linesA.enforceCase();
+    Console.WriteLine("> Casse forcée");
+}*/
+
+
 
 // TODO:  05 Appliquer le nettoyage selon la demande utilisateur
 
@@ -74,12 +86,11 @@ bool ignoreCase = Console.ReadLine() == "o";
 // TODO: 06 Créer et remplir une liste de LinesComparison à partir de linesA et linesB
 List<LinesComparison> comparisons = new();
 
+//////linesA.ToList<>
+
 // TODO: 07 Sélectionner les lignes qui ont des différences
 var diffLines = new List<LinesComparison>();
 
-/*// TODO: 07 Sélectionner les lignes qui ont des différences
-var diffLines = new Liste<LinesComparison>();
-*/
 
 
 // TODO: 08 Afficher le nombre de lignes identiques et différentes entre les 2 fichiers
@@ -109,6 +120,11 @@ Func<LinesComparison, int> countVariations = _ => -1;
 // Le pendant de ReadAllLines est WriteAllLines
 Console.Write("\n\nSPECIAL FEATURE: Clé de chiffrement [1-25]: ");
 byte key = Convert.ToByte(Console.ReadLine());
+
+/*string ciphertext = Encrypt(linesA, key);
+string[] writingData =  File.WriteAllLines( pathA, writingData, System.Text.Encoding encoding);*/
+//          File.Encrypt();
+
 
 public class LinesComparison
 {
