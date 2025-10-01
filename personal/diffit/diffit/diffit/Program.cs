@@ -66,24 +66,24 @@ Console.WriteLine("Choisir les options:");
 Console.Write("-Ignorer les espaces [o/n]: ");
 bool ignoreSpaces = Console.ReadLine() == "o";
 if (ignoreSpaces) {
-    cleanSpaces(linesA.ToString());
-    cleanSpaces(linesB.ToString());
+    linesA = linesA.Select(cleanSpaces).ToArray();
+    linesB = linesB.Select(cleanSpaces).ToArray();
     Console.WriteLine("> espaces forcée");
 }
 
 Console.Write("-Ignorer les tabulations [o/n]: ");
 bool ignoreTabs = Console.ReadLine() == "o";
 if (ignoreTabs) {
-    cleanTabs(linesA.ToString());
-    cleanTabs(linesB.ToString());
+    linesA = linesA.Select(cleanTabs).ToArray();
+    linesB = linesB.Select(cleanTabs).ToArray();
     Console.WriteLine("> tabulations forcée");
 }
 
 Console.Write("-Ignorer la casse [o/n]: ");
 bool ignoreCase = Console.ReadLine() == "o";
 if (ignoreCase) {
-    enforceCase(linesA.ToString());
-    enforceCase(linesB.ToString());
+    linesA = linesA.Select(enforceCase).ToArray();
+    linesB = linesB.Select(enforceCase).ToArray();
     Console.WriteLine("> Casse forcée");
 }
 
