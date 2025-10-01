@@ -23,3 +23,4 @@ status: TODO / WIP / DONE
 | running #6 | TODO |    x    | x     |         |             |      |       | x      |       |      |             |          |       |        |           |      |      |
 | fractale   | TODO |         |       |         |             |      |       |        |       |      |             |          |       |        |           | x    |      |
 | linqorne   | TODO |    x    | x     | x       |             |      | x     | x      | x     |      |             | x        |       |        |           |      |      |
+| diffit     | WIP  |    x    | x     | x       |             |      | x     | x      | x     |      |             | x        |       |        |           |      |      |
