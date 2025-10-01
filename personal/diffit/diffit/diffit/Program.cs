@@ -42,7 +42,7 @@ Console.Write($"{linesB.Length} lines");
 // TODO: 03 Vérifier que les fichier ont le même nombre de lignes
 if (linesA.Length == linesB.Length) 
 {
-    Console.WriteLine($"les fichiers {pathA} et {pathB} ont le même nombre de lignes");
+    Console.WriteLine($"les fichiers '{pathA}' et '{pathB}' ont le même nombre de lignes");
 }
 else{
     Console.WriteLine("Erreur: les fichiers n'ont pas le même nombre de ligne");
@@ -57,7 +57,7 @@ Console.WriteLine(">Fichiers chargés avec succés");
 // Il existe la fonction Replace sur les string...
 // Le caractère tabulation s’écrit \t
 Func<string, string> cleanSpaces = text => text.Contains(" ") ? text.Replace(" " , "") : text;
-Func<string, string> cleanTabs = text => text.Contains("\t") ? text.Replace("\t", "\r") : text;
+Func<string, string> cleanTabs = text => text.Contains("\t") ? text.Replace("\t", "") : text;
 Func<string, string> enforceCase = text => text.ToLower();
 
 /// OPTIONS DE NETTOYAGE
@@ -94,15 +94,26 @@ if (ignoreCase) {
 
 // TODO: 06 Créer et remplir une liste de LinesComparison à partir de linesA et linesB
 List<LinesComparison> comparisons = new();
-
-//////linesA.ToList<>
+var LinesComparisonResult = linesA.Zip(linesA,(A,B)=> $"{A}: {B}") ;
+foreach (var item in LinesComparisonResult)
+{
+    Console.WriteLine(item);
+}
 
 // TODO: 07 Sélectionner les lignes qui ont des différences
 var diffLines = new List<LinesComparison>();
+/*
+var firstNotSecond = linesA.Except(linesB).ToList();
+var secondNotFirst = linesB.Except(linesA).ToList();
+Console.WriteLine(firstNotSecond);
+Console.WriteLine(secondNotFirst);*/
 
 
 
 // TODO: 08 Afficher le nombre de lignes identiques et différentes entre les 2 fichiers
+/*int nmbrIdentLines =;
+int nmbrDiffLines = ;
+Console.WriteLine($"Lignes identiques: {nmbrIdentLines}\r\nLignes différentes: {nmbrDiffLines}");*/
 
 // TODO: 09 Définir une fonction qui compte les différences (caractères différents) entre deux textes (sera utilisé pour les 2 lignes de A et B...)
 // Pour info/rappel, la fonction Zip (comme une fermeture éclair) permet d’associer deux listes.
