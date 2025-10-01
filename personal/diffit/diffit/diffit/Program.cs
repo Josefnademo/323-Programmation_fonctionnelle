@@ -94,19 +94,22 @@ if (ignoreCase) {
 
 // TODO: 06 Créer et remplir une liste de LinesComparison à partir de linesA et linesB
 List<LinesComparison> comparisons = new();
+
 var LinesComparisonResult = linesA.Zip(linesA,(A,B)=> $"{A}: {B}") ;
-foreach (var item in LinesComparisonResult)
-{
-    Console.WriteLine(item);
-}
+// affichage des touotes lines
+LinesComparisonResult.ToList().ForEach(item => Console.WriteLine(item));
 
 // TODO: 07 Sélectionner les lignes qui ont des différences
 var diffLines = new List<LinesComparison>();
-/*
+
 var firstNotSecond = linesA.Except(linesB).ToList();
 var secondNotFirst = linesB.Except(linesA).ToList();
-Console.WriteLine(firstNotSecond);
-Console.WriteLine(secondNotFirst);*/
+
+// affichage des differences 
+firstNotSecond.ForEach(i => Console.WriteLine(i));
+
+
+
 
 
 
