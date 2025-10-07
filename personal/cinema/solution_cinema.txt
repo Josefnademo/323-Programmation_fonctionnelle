@@ -1,0 +1,84 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
+// Класс Movie с нужными свойствами
+public class Movie
+{
+    public string Title { get; set; }
+    public string Genre { get; set; }
+    public double Rating { get; set; }
+    public int Year { get; set; }
+    public string[] LanguageOptions { get; set; }
+    public string[] StreamingPlatforms { get; set; }
+}
+
+class Program
+{
+    static void Main()
+    {
+        // Создаем список фильмов
+        List<Movie> frenchMovies = new List<Movie>() {
+            new Movie() { Title = "Le fabuleux destin d'Amélie Poulain", Genre = "Comédie", Rating = 8.3, Year = 2001, LanguageOptions = new string[] {"Français", "English"}, StreamingPlatforms = new string[] {"Netflix", "Hulu"} },
+            new Movie() { Title = "Intouchables", Genre = "Comédie", Rating = 8.5, Year = 2011, LanguageOptions = new string[] {"Français"}, StreamingPlatforms = new string[] {"Netflix", "Amazon"} },
+            new Movie() { Title = "The Matrix", Genre = "Science-Fiction", Rating = 8.7, Year = 1999, LanguageOptions = new string[] {"English", "Español"}, StreamingPlatforms = new string[] {"Hulu", "Amazon"} },
+            new Movie() { Title = "La Vie est belle", Genre = "Drame", Rating = 8.6, Year = 1946, LanguageOptions = new string[] {"Français", "Italiano"}, StreamingPlatforms = new string[] {"Netflix"} },
+            new Movie() { Title = "Gran Torino", Genre = "Drame", Rating = 8.2, Year = 2008, LanguageOptions = new string[] {"English"}, StreamingPlatforms = new string[] {"Hulu"} },
+            new Movie() { Title = "La Haine", Genre = "Drame", Rating = 8.1, Year = 1995, LanguageOptions = new string[] {"Français"}, StreamingPlatforms = new string[] {"Netflix"} },
+            new Movie() { Title = "Oldboy", Genre = "Thriller", Rating = 8.4, Year = 2003, LanguageOptions = new string[] {"Coréen", "English"}, StreamingPlatforms = new string[] {"Amazon"} }
+        };
+
+        // 1️⃣ Фильтр: фильмы, которые НЕ являются "Comédie" или "Drame"
+        var notComedyOrDrama = frenchMovies
+            .Where(m => m.Genre != "Comédie" && m.Genre != "Drame")
+            .ToList();
+        Console.WriteLine("1️⃣ Фильмы не 'Comédie' или 'Drame':");
+        notComedyOrDrama.ForEach(m => Console.WriteLine($"- {m.Title}"));
+
+        // 2️⃣ Фильтр: фильмы с рейтингом < 7
+        var ratingBelow7 = frenchMovies
+            .Where(m => m.Rating < 7)
+            .ToList();
+        Console.WriteLine("\n2️⃣ Фильмы с рейтингом ниже 7:");
+        ratingBelow7.ForEach(m => Console.WriteLine($"- {m.Title}"));
+        // ⚠️ Здесь будет пусто, т.к. все рейтинги > 8
+
+        // 3️⃣ Фильтр: фильмы, вышедшие до 2000 года
+        var before2000 = frenchMovies
+            .Where(m => m.Year < 2000)
+            .ToList();
+        Console.WriteLine("\n3️⃣ Фильмы до 2000 года:");
+        before2000.ForEach(m => Console.WriteLine($"- {m.Title}"));
+
+        // 4️⃣ Фильтр: фильмы без французского дубляжа
+        var noFrench = frenchMovies
+            .Where(m => !m.LanguageOptions.Contains("Français"))
+            .ToList();
+        Console.WriteLine("\n4️⃣ Фильмы без французского языка:");
+        noFrench.ForEach(m => Console.WriteLine($"- {m.Title}"));
+
+        // 5️⃣ Фильтр: фильмы, которых нет на Netflix
+        var notOnNetflix = frenchMovies
+            .Where(m => !m.StreamingPlatforms.Contains("Netflix"))
+            .ToList();
+        Console.WriteLine("\n5️⃣ Фильмы не на Netflix:");
+        notOnNetflix.ForEach(m => Console.WriteLine($"- {m.Title}"));
+
+        // 6️⃣ Версия 2: совмещаем все фильтры вместе
+        var combinedFilter = frenchMovies
+            .Where(m =>
+                m.Genre != "Comédie" && m.Genre != "Drame" &&   // не комедия и не драма
+                m.Rating < 7 &&                                 // рейтинг ниже 7
+                m.Year < 2000 &&                                // до 2000 года
+                !m.LanguageOptions.Contains("Français") &&       // без французского
+                !m.StreamingPlatforms.Contains("Netflix")        // не на Netflix
+            )
+            .ToList();
+
+        Console.WriteLine("\n6️⃣ Фильмы, подходящие под ВСЕ фильтры одновременно:");
+        if (combinedFilter.Any())
+            combinedFilter.ForEach(m => Console.WriteLine($"- {m.Title}"));
+        else
+            Console.WriteLine("Нет фильмов, подходящих под все условия.");
+    }
+}
