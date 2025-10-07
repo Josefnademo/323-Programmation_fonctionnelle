@@ -1,0 +1,62 @@
+using System;
+using System.Collections.Generic;
+
+class Program
+{
+    static void Main()
+    {
+        // Создаём список игроков
+        List<Player> players = new List<Player>()
+        {
+            new Player("Joe", 32),
+            new Player("Jack", 30),
+            new Player("William", 37),
+            new Player("Averell", 25)
+        };
+
+        // ❌ Больше никаких mutable переменных вроде "elder" или "biggestAge"
+        // ✅ Мы просто вычисляем максимум через чистые выражения
+
+        // Так как всегда 4 игрока, можно использовать вложенные тернарные операторы
+        Player elder =
+            players[0].Age > players[1].Age
+                ? (players[0].Age > players[2].Age
+                    ? (players[0].Age > players[3].Age ? players[0] : players[3])
+                    : (players[2].Age > players[3].Age ? players[2] : players[3]))
+                : (players[1].Age > players[2].Age
+                    ? (players[1].Age > players[3].Age ? players[1] : players[3])
+                    : (players[2].Age > players[3].Age ? players[2] : players[3]));
+
+        // Выводим результат
+        Console.WriteLine($"Le plus âgé est {elder.Name} qui a {elder.Age} ans");
+    }
+}
+
+// Класс Player остаётся неизменным (все поля — readonly, т.е. immutables)
+public class Player
+{
+    private readonly string _name;
+    private readonly int _age;
+
+    public Player(string name, int age)
+    {
+        _name = name;
+        _age = age;
+    }
+
+    public string Name => _name;
+    public int Age => _age;
+}
+
+
+/*
+Объяснение:
+
+Мы удалили переменные elder и biggestAge, которые изменялись в цикле foreach.
+
+Вместо этого мы не изменяем ничего во времени, а просто создаём новое значение один раз, вычисляя максимум.
+
+Так как в условии сказано, что игроков всегда 4, можно безопасно использовать players[index] и вложенные ?:.
+
+Код остаётся без LINQ, как требуется.
+*/
