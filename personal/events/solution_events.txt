@@ -1,0 +1,182 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
+class Program
+{
+    static void Main()
+    {
+        // --- Étape 1 : Формирование команд ---
+        var group1 = new List<string> { "Alice", "Bob", "Charlie", "Diana", "Eve" };
+        var group2 = new List<string> { "Felix", "Grace", "Hugo", "Iris", "Jack" };
+
+        // Используем Zip() для объединения элементов один к одному
+        var teams = group1.Zip(group2, (g1, g2) => $"{g1} & {g2}").ToList();
+
+        Console.WriteLine("Répartition:\n-------------------------");
+        // Выводим пары
+        teams.Select((team, index) => $"Team {index + 1}: {team}")
+             .ToList()
+             .ForEach(Console.WriteLine);
+
+        Console.WriteLine($"\nTotal: {teams.Count} équipes\n");
+
+        // Теперь переходим к Étape 2:
+        RunPingPongTournament();
+    }
+
+    // --- Étape 2 : Турнир по пинг-понгу ---
+    static void RunPingPongTournament()
+    {
+        var playersA = new List<string> { "Alice", "Bob", "Charlie", "Diana", "Eve", "Felix" };
+        var playersB = new List<string> { "Grace", "Hugo", "Iris", "Jack", "Kim", "Leo" };
+        var scoresA = new List<int> { 21, 18, 21, 15, 21, 19 };
+        var scoresB = new List<int> { 19, 21, 16, 21, 17, 21 };
+
+        // Сначала соединяем игроков
+        var matches = playersA.Zip(playersB, (p1, p2) => new { p1, p2 })
+            // Затем соединяем со счетами
+            .Zip(scoresA.Zip(scoresB, (s1, s2) => new { s1, s2 }),
+                 (pair, score) => new Match
+                 {
+                     Player1 = pair.p1,
+                     Player2 = pair.p2,
+                     Score1 = score.s1,
+                     Score2 = score.s2
+                 })
+            .ToList();
+
+        Console.WriteLine("Tournoi de Ping-Pong\n==============================");
+
+        // Вывод результатов
+        matches.Select((m, i) => $"Match {i + 1}: {m.Result} → Gagnant: {m.Winner}")
+               .ToList()
+               .ForEach(Console.WriteLine);
+
+        // Матчи с разницей <= 2 очков
+        var closeMatches = matches.Where(m => m.IsCloseMatch).ToList();
+        Console.WriteLine($"\nMatchs serrés ({closeMatches.Count}):");
+        closeMatches.ForEach(m => Console.WriteLine($"   • {m.Result}"));
+
+        // Формируем рейтинг победителей
+        var ranking = matches
+            .GroupBy(m => m.Winner)
+            .Select(g => new { Player = g.Key, Wins = g.Count() })
+            .OrderBy(r => r.Player);
+
+        Console.WriteLine("\nClassement:");
+        ranking.ToList().ForEach(r => Console.WriteLine($"   {r.Player}: {r.Wins} victoire(s)"));
+
+        Console.WriteLine();
+        RunDanceEvent(); // Étape 3
+    }
+}
+
+// Класс для матчей
+public class Match
+{
+    public string Player1 { get; set; }
+    public string Player2 { get; set; }
+    public int Score1 { get; set; }
+    public int Score2 { get; set; }
+
+    // Определяем победителя
+    public string Winner => Score1 > Score2 ? Player1 : Player2;
+    // Формат результата
+    public string Result => $"{Player1} {Score1}-{Score2} {Player2}";
+    // Проверка, был ли матч "плотным"
+    public bool IsCloseMatch => Math.Abs(Score1 - Score2) <= 2;
+}
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
+public static class DanceNight
+{
+    public static void RunDanceEvent()
+    {
+        var malePartners = new List<string> { "Antoine", "Bruno", "Camille", "David", "Etienne", "Fabien" };
+        var femalePartners = new List<string> { "Amelie", "Beatrice", "Celine", "Delphine", "Elise", "Fanny" };
+        var danceStyles = new List<string> { "Waltz", "Tango", "Salsa", "Rock", "Bachata", "Cha-cha" };
+        var songs = new List<string> { "La Vie en Rose", "Por una Cabeza", "Bamboleo", "Johnny B. Goode", "Corazon Espinado", "Sway" };
+        var schedules = new List<TimeSpan> { new(20, 00, 0), new(20, 15, 0), new(20, 30, 0), new(20, 45, 0), new(21, 00, 0), new(21, 15, 0) };
+        var durations = new List<int> { 12, 10, 15, 8, 12, 10 };
+
+        // Используем несколько Zip() для объединения данных в объекты DanceSession
+        var sessions = malePartners
+            .Zip(femalePartners, (m, f) => new { m, f })
+            .Zip(danceStyles, (pair, style) => new { pair.m, pair.f, style })
+            .Zip(songs, (p, song) => new { p.m, p.f, p.style, song })
+            .Zip(schedules.Zip(durations, (time, dur) => new { time, dur }),
+                 (info, timing) => new DanceSession
+                 {
+                     MalePartner = info.m,
+                     FemalePartner = info.f,
+                     DanceStyle = info.style,
+                     Song = info.song,
+                     StartTime = timing.time,
+                     DurationMinutes = timing.dur
+                 })
+            .OrderBy(s => s.StartTime)
+            .ToList();
+
+        Console.WriteLine("Programme de danse\n===============================");
+        sessions.ForEach(s =>
+        {
+            Console.WriteLine($"🎵 {s.Schedule}");
+            Console.WriteLine($"   Couple: {s.Couple}\n");
+        });
+
+        // --- Статистика ---
+        var totalDuration = sessions.Sum(s => s.DurationMinutes);
+        Console.WriteLine("Vérification du planning");
+        Console.WriteLine("Statistiques:");
+        Console.WriteLine($"   • Durée totale: {totalDuration} minutes");
+        Console.WriteLine($"   • Nombre de danses: {sessions.Count}");
+        Console.WriteLine($"   • Début: {sessions.First().StartTime:hh\\:mm}");
+        Console.WriteLine($"   • Fin: {sessions.Last().EndTime:hh\\:mm}\n");
+
+        Console.WriteLine("Styles:");
+        sessions.GroupBy(s => s.DanceStyle)
+                .ToList()
+                .ForEach(g => Console.WriteLine($"   • {g.Key}: {g.Count()}x"));
+
+        // --- Ротация партнёров ---
+        Console.WriteLine("\nProchaine session:");
+        Console.WriteLine("Suggestion:");
+        var rotated = malePartners.Zip(femalePartners.Skip(1).Concat(femalePartners.Take(1)),
+                                       (m, f) => $"{m} & {f}");
+        rotated.ToList().ForEach(Console.WriteLine);
+    }
+}
+
+// Класс сессии танца
+public class DanceSession
+{
+    public string MalePartner { get; set; }
+    public string FemalePartner { get; set; }
+    public string DanceStyle { get; set; }
+    public string Song { get; set; }
+    public TimeSpan StartTime { get; set; }
+    public int DurationMinutes { get; set; }
+
+    // Пара и расписание
+    public string Couple => $"{MalePartner} & {FemalePartner}";
+    public TimeSpan EndTime => StartTime.Add(TimeSpan.FromMinutes(DurationMinutes));
+    public string Schedule => $"{StartTime:hh\\:mm} - {EndTime:hh\\:mm} : {DanceStyle} to '{Song}'";
+}
+
+
+
+/*Краткое объяснение
+
+Zip() соединяет два списка по индексу, создавая пары (1:1).
+
+Можно применять несколько Zip() подряд, чтобы объединить больше двух списков.
+
+Для вывода или подсчётов используем LINQ методы: Select(), GroupBy(), Sum(), OrderBy(), Skip(), Concat().
+
+В последней части я сделал ротацию партнёров — просто сместил список женщин на 1 вперёд.*/
+
+
