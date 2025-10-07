@@ -1,0 +1,140 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
+namespace RandoReduce
+{
+    public class Program
+    {
+        public static void Main()
+        {
+            // === 1. Exemple de points GPS (latitude, longitude, altitude en mètres) ===
+            List<Trackpoint> trackpoints = new List<Trackpoint>()
+            {
+                new Trackpoint(46.5191, 6.5668, 400),
+                new Trackpoint(46.5195, 6.5672, 410),
+                new Trackpoint(46.5200, 6.5676, 420),
+                new Trackpoint(46.5205, 6.5680, 415),
+                new Trackpoint(46.5210, 6.5684, 430),
+                new Trackpoint(46.5215, 6.5688, 440),
+                new Trackpoint(46.5220, 6.5692, 435),
+                new Trackpoint(46.5225, 6.5696, 445),
+                new Trackpoint(46.5230, 6.5700, 450),
+                new Trackpoint(46.5235, 6.5704, 440)
+            };
+
+            // === 2. Calculer la distance totale avec Zip() ===
+            double totalDistance = trackpoints
+                // Associe chaque point avec le suivant (Skip(1) décale la liste)
+                .Zip(trackpoints.Skip(1), (a, b) => a.GetDistanceFrom(b))
+                .Sum(); // On somme toutes les distances
+
+            Console.WriteLine($"Distance totale : {Math.Round(totalDistance / 1000, 2)} km\n");
+
+
+            // === 3. Calcul du dénivelé positif et négatif ===
+            var elevationDiffs = trackpoints
+                // On compare altitude de chaque point avec le suivant
+                .Zip(trackpoints.Skip(1), (a, b) => b.Elevation - a.Elevation);
+
+            // Dénivelé positif : on additionne toutes les hausses d'altitude
+            double denivelePositif = elevationDiffs.Where(d => d > 0).Sum();
+
+            // Dénivelé négatif : on additionne toutes les descentes
+            double deniveleNegatif = elevationDiffs.Where(d => d < 0).Sum();
+
+            Console.WriteLine($"Dénivelé positif : {Math.Round(denivelePositif, 2)} m");
+            Console.WriteLine($"Dénivelé négatif : {Math.Round(deniveleNegatif, 2)} m\n");
+
+
+            // === 4. Réduction simple : garder 1 point sur 5 ===
+            var reducedByFive = trackpoints
+                // On ajoute un index à chaque point
+                .Select((p, i) => new { Point = p, Index = i })
+                // On garde uniquement ceux dont l'index est divisible par 5
+                .Where(x => x.Index % 5 == 0)
+                // On extrait le point d'origine
+                .Select(x => x.Point)
+                .ToList();
+
+            Console.WriteLine($"Réduction simple : {reducedByFive.Count} points gardés sur {trackpoints.Count}\n");
+
+
+            // === 5. Réduction intelligente : garder un point tous les 100 mètres ===
+            var cumulative = trackpoints
+                // On utilise Aggregate pour construire une liste avec distance cumulée depuis le départ
+                .Aggregate(
+                    new List<(Trackpoint Point, double Distance)>(),
+                    (list, current) =>
+                    {
+                        // Si c'est le premier point → distance = 0
+                        double newDist = list.Count == 0
+                            ? 0
+                            // Sinon on ajoute la distance avec le dernier point
+                            : list.Last().Distance + list.Last().Point.GetDistanceFrom(current);
+
+                        // On ajoute le tuple (point, distance cumulée)
+                        list.Add((current, newDist));
+                        return list;
+                    }
+                );
+
+            var reducedSmart = cumulative
+                // On regroupe par "paquets" de 100 mètres (ex: 0–99m, 100–199m, etc.)
+                .GroupBy(x => Math.Floor(x.Distance / 100))
+                // On garde le premier point de chaque groupe
+                .Select(g => g.First().Point)
+                .ToList();
+
+            Console.WriteLine($"Réduction intelligente : {reducedSmart.Count} points gardés sur {trackpoints.Count}\n");
+
+            Console.WriteLine("=== Programme terminé ===");
+            Console.ReadKey();
+        }
+    }
+
+    // === Classe représentant un point de randonnée (GPS + altitude) ===
+    public class Trackpoint
+    {
+        public double Latitude { get; set; }    // Latitude (nord/sud)
+        public double Longitude { get; set; }   // Longitude (est/ouest)
+        public double Elevation { get; set; }   // Altitude en mètres
+
+        public Trackpoint(double latitude, double longitude, double elevation)
+        {
+            Latitude = latitude;
+            Longitude = longitude;
+            Elevation = elevation;
+        }
+
+        // Méthode pour calculer la distance entre deux points (formule de Haversine)
+        public double GetDistanceFrom(Trackpoint other)
+        {
+            const double R = 6371000; // rayon de la Terre en mètres
+
+            double lat1 = Latitude * Math.PI / 180;
+            double lat2 = other.Latitude * Math.PI / 180;
+            double dLat = (other.Latitude - Latitude) * Math.PI / 180;
+            double dLon = (other.Longitude - Longitude) * Math.PI / 180;
+
+            double a = Math.Sin(dLat / 2) * Math.Sin(dLat / 2) +
+                       Math.Cos(lat1) * Math.Cos(lat2) *
+                       Math.Sin(dLon / 2) * Math.Sin(dLon / 2);
+
+            double c = 2 * Math.Atan2(Math.Sqrt(a), Math.Sqrt(1 - a));
+
+            // Distance en mètres
+            return R * c;
+        }
+    }
+}
+
+
+
+/*Что делает каждая часть:
+
+Zip() — соединяет каждый элемент списка с его следующим.
+
+Aggregate() — создаёт аккумулятор, в который мы добавляем каждый новый элемент, сохраняя кумулятивную дистанцию.
+
+GroupBy() + Math.Floor(x.Distance / 100) — группирует точки по "сотням метров".*/

@@ -1,0 +1,251 @@
+using System;
+using System.Collections.Generic;
+using System.Collections.Immutable;
+
+namespace Linqorne
+{
+    public static class LinqorneExtensions
+    {
+        // 🌀 ForEach → Loop
+        public static void Loop<TSource>(this IEnumerable<TSource> subject, Action<TSource> action)
+        {
+            foreach (var item in subject)
+            {
+                action(item);
+            }
+        }
+
+        // 🔍 Where → Find
+        public static IEnumerable<TSource> Find<TSource>(
+            this IEnumerable<TSource> subject,
+            Func<TSource, bool> isWanted)
+        {
+            var wanteds = new List<TSource>();
+
+            foreach (var item in subject)
+            {
+                if (isWanted(item))
+                    wanteds.Add(item);
+            }
+
+            return wanteds.ToImmutableArray();
+        }
+
+        // 🗺 Select → Map
+        public static IEnumerable<TTarget> Map<TSource, TTarget>(
+            this IEnumerable<TSource> source,
+            Func<TSource, TTarget> convert)
+        {
+            var result = new List<TTarget>();
+            foreach (var item in source)
+            {
+                result.Add(convert(item));
+            }
+            return result.ToImmutableArray();
+        }
+
+        // 🥿 Aggregate → Reduce
+        public static TAccumulate Reduce<TSource, TAccumulate>(
+            this IEnumerable<TSource> source,
+            TAccumulate seed,
+            Func<TAccumulate, TSource, TAccumulate> reducer)
+        {
+            var acc = seed;
+            foreach (var item in source)
+            {
+                acc = reducer(acc, item);
+            }
+            return acc;
+        }
+
+        // 📊 Statistiques : Min / Max / Average (int,double,decimal)
+        public static int Min(this IEnumerable<int> source)
+        {
+            using var e = source.GetEnumerator();
+            if (!e.MoveNext()) throw new InvalidOperationException("Empty collection");
+            int min = e.Current;
+            while (e.MoveNext()) if (e.Current < min) min = e.Current;
+            return min;
+        }
+
+        public static int Max(this IEnumerable<int> source)
+        {
+            using var e = source.GetEnumerator();
+            if (!e.MoveNext()) throw new InvalidOperationException("Empty collection");
+            int max = e.Current;
+            while (e.MoveNext()) if (e.Current > max) max = e.Current;
+            return max;
+        }
+
+        public static double Average(this IEnumerable<double> source)
+        {
+            double sum = 0;
+            int count = 0;
+            foreach (var v in source)
+            {
+                sum += v;
+                count++;
+            }
+            if (count == 0) throw new InvalidOperationException("Empty collection");
+            return sum / count;
+        }
+
+        public static decimal Average(this IEnumerable<decimal> source)
+        {
+            decimal sum = 0;
+            int count = 0;
+            foreach (var v in source)
+            {
+                sum += v;
+                count++;
+            }
+            if (count == 0) throw new InvalidOperationException("Empty collection");
+            return sum / count;
+        }
+
+        // ⚖️ Médiane
+        public static double Median<TSource>(this IEnumerable<TSource> source, Func<TSource, double> converter)
+        {
+            var list = new List<double>(source.Map(converter));
+            list.Sort();
+            int count = list.Count;
+
+            if (count == 0)
+                throw new InvalidOperationException("La collection ne peut pas être vide");
+
+            if (count % 2 == 1)
+                return list[count / 2];
+            else
+                return (list[(count / 2) - 1] + list[count / 2]) / 2.0;
+        }
+
+        // 📈 Covariance
+        public static double Covariance<TSource>(
+            this IEnumerable<TSource> source,
+            Func<TSource, double> converterX,
+            Func<TSource, double> converterY)
+        {
+            var valuesX = new List<double>(source.Map(converterX));
+            var valuesY = new List<double>(source.Map(converterY));
+
+            if (valuesX.Count != valuesY.Count || valuesX.Count == 0)
+                throw new InvalidOperationException("Les collections doivent avoir la même taille et ne pas être vides.");
+
+            double avgX = valuesX.Average();
+            double avgY = valuesY.Average();
+
+            double covariance = 0.0;
+            int count = valuesX.Count;
+
+            for (int i = 0; i < count; i++)
+            {
+                covariance += (valuesX[i] - avgX) * (valuesY[i] - avgY);
+            }
+
+            return covariance / (count - 1);
+        }
+
+        // 🧩 ChunkBy
+        public static IEnumerable<IEnumerable<TSource>> ChunkBy<TSource>(this IEnumerable<TSource> source, int chunkSize)
+        {
+            if (chunkSize <= 0)
+                throw new ArgumentException("Le chunkSize doit être supérieur à zéro.");
+
+            List<TSource> chunk = new List<TSource>(chunkSize);
+
+            foreach (var element in source)
+            {
+                chunk.Add(element);
+                if (chunk.Count == chunkSize)
+                {
+                    yield return chunk.ToImmutableArray();
+                    chunk = new List<TSource>(chunkSize);
+                }
+            }
+
+            if (chunk.Count > 0)
+                yield return chunk.ToImmutableArray();
+        }
+
+        // 🧮 Mode
+        public static TSource Mode<TSource>(this IEnumerable<TSource> source)
+        {
+            var counts = new Dictionary<TSource, int>();
+            foreach (var item in source)
+            {
+                if (counts.ContainsKey(item))
+                    counts[item]++;
+                else
+                    counts[item] = 1;
+            }
+
+            TSource mostFrequent = default!;
+            int maxCount = 0;
+            foreach (var kvp in counts)
+            {
+                if (kvp.Value > maxCount)
+                {
+                    maxCount = kvp.Value;
+                    mostFrequent = kvp.Key;
+                }
+            }
+
+            return mostFrequent;
+        }
+
+        // 🗝️ ToDictionarySafely
+        public static Dictionary<TKey, TValue> ToDictionarySafely<TSource, TKey, TValue>(
+            this IEnumerable<TSource> source,
+            Func<TSource, TKey> keySelector,
+            Func<TSource, TValue> valueSelector,
+            bool preferLast = true)
+        {
+            Dictionary<TKey, TValue> dict = new Dictionary<TKey, TValue>();
+
+            foreach (var element in source)
+            {
+                var key = keySelector(element);
+                var value = valueSelector(element);
+
+                if (dict.ContainsKey(key))
+                {
+                    if (preferLast)
+                        dict[key] = value;
+                }
+                else
+                {
+                    dict.Add(key, value);
+                }
+            }
+
+            return dict;
+        }
+    }
+}
+
+
+/*using System;
+using System.Collections.Generic;
+using Linqorne;
+
+class Program
+{
+    static void Main()
+    {
+        var data = new List<(double X, double Y)>
+        {
+            (2.1, 8.0),
+            (2.5, 12.0),
+            (3.6, 14.0),
+            (4.0, 10.0),
+            (4.4, 12.0),
+        };
+
+        Console.WriteLine($"Médiane de X: {data.Median(d => d.X)}");
+        Console.WriteLine($"Covariance X,Y: {data.Covariance(d => d.X, d => d.Y)}");
+
+        var numbers = new[] { 1, 2, 2, 3, 3, 3, 4 };
+        Console.WriteLine($"Mode: {numbers.Mode()}");
+    }
+}
+*/

@@ -1,0 +1,130 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net.Http;
+using System.Threading.Tasks;
+using Newtonsoft.Json;
+
+namespace MeteoSport
+{
+    // === Structures immuables (records) pour stocker les données météo ===
+    public record WeatherData(Hourly hourly);
+    public record Hourly(string[] time, float[] temperature_2m, float[] precipitation, float[] wind_speed_10m);
+
+    public class Program
+    {
+        public static async Task Main(string[] args)
+        {
+            // === Étape 1 : Récupération des données depuis Open-Meteo ===
+            using HttpClient client = new HttpClient();
+            string url = "https://api.open-meteo.com/v1/forecast?latitude=46.3833&longitude=6.2348&hourly=temperature_2m,precipitation,wind_speed_10m";
+
+            Console.WriteLine("Téléchargement des données météo...");
+            string response = await client.GetStringAsync(url);
+            var weatherData = JsonConvert.DeserializeObject<WeatherData>(response)!;
+
+            var hourly = weatherData.hourly;
+            Console.WriteLine("✅ Données météo téléchargées et désérialisées avec succès.\n");
+
+            // === Étape 2 : Créneaux idéaux pour le running ===
+            var bestRunningHours = GetBestRunningHours(hourly);
+
+            Console.WriteLine("=== Créneaux idéaux pour le running ===");
+            foreach (var h in bestRunningHours)
+            {
+                Console.WriteLine($"{h.Time} | Temp: {h.Temperature}°C | Vent: {h.WindSpeed} km/h");
+            }
+            Console.WriteLine();
+
+            // === Étape 3 : Moyennes générales ===
+            var (avgTemp, avgWind) = CalculateAverages(hourly);
+            Console.WriteLine("=== Moyennes ===");
+            Console.WriteLine($"Température moyenne : {Math.Round(avgTemp, 1)}°C");
+            Console.WriteLine($"Vitesse moyenne du vent : {Math.Round(avgWind, 1)} km/h\n");
+
+            // === Étape 4 : Compter les heures idéales pour le sport ===
+            int idealSportHours = CountIdealSportHours(hourly);
+            Console.WriteLine($"=== Heures idéales pour le sport ===");
+            Console.WriteLine($"Nombre d'heures avec conditions optimales : {idealSportHours}\n");
+
+            Console.WriteLine("Programme terminé ✅");
+        }
+
+        // === Étape 2 : Filtrer les meilleures heures pour courir ===
+        public static IEnumerable<(string Time, float Temperature, float WindSpeed)> GetBestRunningHours(Hourly hourly)
+        {
+            return hourly.time
+                .Select((t, index) => new
+                {
+                    Time = t,
+                    Temperature = hourly.temperature_2m[index],
+                    Precipitation = hourly.precipitation[index],
+                    WindSpeed = hourly.wind_speed_10m[index]
+                })
+                // Conditions optimales pour le running
+                .Where(x => x.Temperature >= 18 && x.Temperature <= 22 && x.Precipitation == 0 && x.WindSpeed < 10)
+                .Select(x => (x.Time, x.Temperature, x.WindSpeed));
+        }
+
+        // === Étape 3 : Calcul des moyennes (température et vent) ===
+        public static (float AverageTemperature, float AverageWindSpeed) CalculateAverages(Hourly hourly)
+        {
+            float avgTemp = hourly.temperature_2m.Average();
+            float avgWind = hourly.wind_speed_10m.Average();
+            return (avgTemp, avgWind);
+        }
+
+        // === Étape 4 : Utiliser Aggregate pour compter les heures idéales pour le sport ===
+        public static int CountIdealSportHours(Hourly hourly)
+        {
+            return hourly.time
+                .Select((t, index) => new
+                {
+                    Temperature = hourly.temperature_2m[index],
+                    Precipitation = hourly.precipitation[index],
+                    WindSpeed = hourly.wind_speed_10m[index]
+                })
+                .Aggregate(0, (count, h) =>
+                {
+                    // Conditions optimales : temp 15–25°C, pas de pluie, vent <15 km/h
+                    if (h.Temperature >= 15 && h.Temperature <= 25 && h.Precipitation == 0 && h.WindSpeed < 15)
+                        return count + 1;
+                    return count;
+                });
+        }
+    }
+}
+
+
+
+
+/*Explications rapides :
+
+API utilisée :
+
+Open-Meteo
+ → données gratuites sans clé.
+
+Requête renvoie température, vent, précipitation heure par heure.
+
+Records immuables (record) :
+
+Garantissent des données en lecture seule.
+
+Simplifient la désérialisation JSON avec JsonConvert.DeserializeObject.
+
+Méthodes pures :
+
+GetBestRunningHours() → filtre fonctionnel.
+
+CalculateAverages() → renvoie les moyennes sans altérer les données.
+
+CountIdealSportHours() → utilise Aggregate pour illustrer la réduction fonctionnelle.
+
+Résultats :
+
+Liste des heures parfaites pour courir 🌤
+
+Moyennes globales
+
+Nombre d’heures parfaites pour tout sport*/
